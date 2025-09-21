@@ -1,0 +1,88 @@
+generator client {
+    provider = "prisma-client-js"
+}
+
+datasource db {
+    provider = "postgresql"
+    url      = env("DATABASE_URL")
+}
+
+model Department {
+    id         Int         @id @default(autoincrement())
+    name       String
+    professors Professor[]
+}
+
+model Title {
+    id         Int         @id @default(autoincrement())
+    name       String
+    professors Professor[]
+}
+
+model Professor {
+    id           Int        @id @default(autoincrement())
+    name         String
+    departmentId Int
+    titleId      Int
+    department   Department @relation(fields: [departmentId], references: [id])
+    title        Title      @relation(fields: [titleId], references: [id])
+    subjects     Subject[]
+}
+
+model Building {
+    id       Int       @id @default(autoincrement())
+    name     String
+    rooms    Room[]
+    subjects Subject[]
+}
+
+model Room {
+    id             Int             @id @default(autoincrement())
+    name           String
+    buildingId     Int
+    building       Building        @relation(fields: [buildingId], references: [id])
+    classSchedules ClassSchedule[]
+}
+
+model Subject {
+    id                  Int                   @id @default(autoincrement())
+    code                String
+    name                String
+    professorId         Int
+    buildingId          Int?
+    professor           Professor             @relation(fields: [professorId], references: [id])
+    building            Building?             @relation(fields: [buildingId], references: [id])
+    classes             Class[]
+    prerequisites       SubjectPrerequisite[] @relation("subject_prereqs_subject")
+    SubjectPrerequisite SubjectPrerequisite[] @relation("subject_prereqs_prereq")
+}
+
+model SubjectPrerequisite {
+    id             Int     @id @default(autoincrement())
+    subjectId      Int
+    prerequisiteId Int
+    subject        Subject @relation("subject_prereqs_subject", fields: [subjectId], references: [id])
+    prerequisite   Subject @relation("subject_prereqs_prereq", fields: [prerequisiteId], references: [id])
+}
+
+model Class {
+    id             Int             @id @default(autoincrement())
+    subjectId      Int
+    year           Int
+    semester       Int
+    code           String
+    subject        Subject         @relation(fields: [subjectId], references: [id])
+    classSchedules ClassSchedule[]
+}
+
+model ClassSchedule {
+    id        Int    @id @default(autoincrement())
+    classId   Int
+    roomId    Int
+    dayOfWeek Int
+    startTime String
+    endTime   String
+
+    classRef Class @relation(fields: [classId], references: [id])
+    room     Room  @relation(fields: [roomId], references: [id])
+}
