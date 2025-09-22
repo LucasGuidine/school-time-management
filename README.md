@@ -120,6 +120,13 @@ Lista as salas com horários **ocupados** e **livres** em um dia da semana (0 = 
 
 ### Testes unitários
 
+⚠️ **Aviso importante**:  
+Para rodar os testes unitários (e2e são rodados usando docker), é necessário ter o **Node.js 18** instalado e instalar as dependências localmente com o seguinte comando:
+
+```bash
+npm install --legacy-peer-deps
+```
+
 ```bash
 npm run test
 ```
